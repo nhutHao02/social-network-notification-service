@@ -55,7 +55,7 @@ func (h *NotificationHandler) NotificationWSHandler(c *gin.Context) {
 
 	token, err := token.GetTokenString(c)
 	if err != nil {
-		logger.Error("ChatHandler-MessageWebSocketHandler: get token from request error", zap.Error(err))
+		logger.Error("NotificationHandler-MessageWebSocketHandler: get token from request error", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, common.NewErrorResponse(err.Error(), constants.ConnectNotificationWSFailure))
 		return
 	}
@@ -71,4 +71,55 @@ func (h *NotificationHandler) NotificationWSHandler(c *gin.Context) {
 	}
 
 	h.notifService.NotificationWS(c.Request.Context(), conn, req)
+}
+
+// GetNotificationByID godoc
+//
+//	@Summary		GetNotificationByID
+//	@Description	Get Notifications by User ID
+//	@Tags			Notification
+//	@Accept			json
+//	@Produce		json
+//	@Param			Authorization	header		string												true	"Bearer <your_token>"
+//	@Param			userID			query		int													true	"UserID"
+//	@Param			page			query		int													false	"Page"
+//	@Param			limit			query		int													false	"Limit"
+//	@Success		200				{object}	common.Response{data=[]model.GetNotifByUserIDRes}	"successfully"
+//	@Failure		default			{object}	common.Response{data=nil}							"failure"
+//	@Router			/notif [get]
+func (h *NotificationHandler) GetNotificationByID(c *gin.Context) {
+	var req model.GetNotifByUserIDReq
+
+	if err := request.GetQueryParamsFromUrl(c, &req); err != nil {
+		return
+	}
+
+	userID, err := token.GetUserId(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, common.NewErrorResponse(err.Error(), constants.ConnectNotificationWSFailure))
+		return
+	}
+
+	if userID != int(req.UserID) {
+		c.JSON(http.StatusBadRequest, common.NewErrorResponse(constants.InvalidUserID, constants.ConnectNotificationWSFailure))
+		return
+	}
+
+	token, err := token.GetTokenString(c)
+	if err != nil {
+		logger.Error("NotificationHandler-GetNotificationByID: get token from request error", zap.Error(err))
+		c.JSON(http.StatusInternalServerError, common.NewErrorResponse(err.Error(), constants.ConnectNotificationWSFailure))
+		return
+	}
+
+	req.Token = token
+
+	res, total, err := h.notifService.GetNotifByUserID(c.Request.Context(), req)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, common.NewErrorResponse(constants.InvalidUserID, constants.ConnectNotificationWSFailure))
+		return
+	}
+
+	c.JSON(http.StatusBadRequest, common.NewPagingSuccessResponse(res, total))
+	return
 }

@@ -8,6 +8,90 @@
     },
     "basePath": "/api/v1",
     "paths": {
+        "/notif": {
+            "get": {
+                "description": "Get Notifications by User ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Notification"
+                ],
+                "summary": "GetNotificationByID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer \u003cyour_token\u003e",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "UserID",
+                        "name": "userID",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successfully",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.GetNotifByUserIDRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "default": {
+                        "description": "failure",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/ws/notification": {
             "get": {
                 "description": "NotificationWSHandler send messages to user.",
@@ -87,6 +171,64 @@
                 },
                 "success": {
                     "type": "boolean"
+                }
+            }
+        },
+        "constants.ActionTweet": {
+            "type": "string",
+            "enum": [
+                "Love",
+                "Bookmark",
+                "Repost",
+                "Comment"
+            ],
+            "x-enum-varnames": [
+                "Love",
+                "Bookmark",
+                "Repost",
+                "Comment"
+            ]
+        },
+        "model.GetNotifByUserIDRes": {
+            "type": "object",
+            "properties": {
+                "authorID": {
+                    "type": "integer"
+                },
+                "authorInfo": {
+                    "$ref": "#/definitions/model.UserInfo"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/constants.ActionTweet"
+                },
+                "userID": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.UserInfo": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "fullName": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "urlAvt": {
+                    "type": "string"
                 }
             }
         }

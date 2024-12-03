@@ -27,6 +27,35 @@ type notificationService struct {
 	rabbitmq    *rabbitmq.RabbitMQ
 }
 
+// GetNotifByUserID implements application.NotificationService.
+func (n *notificationService) GetNotifByUserID(ctx context.Context, req model.GetNotifByUserIDReq) ([]model.GetNotifByUserIDRes, uint64, error) {
+	res, total, err := n.queryRepo.GetNotifByUserID(ctx, req)
+	if err != nil {
+		return res, total, err
+	}
+
+	// Create context with metadata
+	md := metadata.Pairs("authorization", constants.BearerString+req.Token)
+	ctxx := metadata.NewOutgoingContext(ctx, md)
+	for index, _ := range res {
+		// get author info
+		authorInfo, err := n.userClient.GetUserInfo(ctxx, &grpcUser.GetUserRequest{UserID: res[index].AuthorID})
+		if err != nil {
+			logger.Error("notificationService-GetNotifByUserID: Error get UserInfo, call grpcUser to server error", zap.Error(err))
+		}
+
+		// pass author info to res
+		res[index].AuthorInfo = &model.UserInfo{
+			ID:       &authorInfo.Id,
+			Email:    &authorInfo.Email,
+			FullName: &authorInfo.FullName,
+			UrlAvt:   &authorInfo.UrlAvt,
+		}
+	}
+
+	return res, total, nil
+}
+
 // NotificationWS implements application.NotificationService.
 func (n *notificationService) NotificationWS(ctx context.Context, conn *websocket.Conn, req model.NotifWSReq) {
 	userIDKey := strconv.Itoa(int(req.UserID))
@@ -72,7 +101,7 @@ func (n *notificationService) NotificationWS(ctx context.Context, conn *websocke
 
 		authorInfo, err := n.userClient.GetUserInfo(ctxx, &grpcUser.GetUserRequest{UserID: notification.AuthorID})
 		if err != nil {
-			logger.Error("tweetService-CommentWebSocket: Error get UserInfo, call grpcUser to server error", zap.Error(err))
+			logger.Error("notificationService-NotificationWS: Error get UserInfo, call grpcUser to server error", zap.Error(err))
 		}
 
 		// pass author info to notification

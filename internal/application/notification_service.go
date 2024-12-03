@@ -9,4 +9,5 @@ import (
 
 type NotificationService interface {
 	NotificationWS(ctx context.Context, conn *websocket.Conn, req model.NotifWSReq)
+	GetNotifByUserID(ctx context.Context, req model.GetNotifByUserIDReq) ([]model.GetNotifByUserIDRes, uint64, error)
 }

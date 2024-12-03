@@ -13,5 +13,5 @@ type Notification struct {
 	AuthorID  int64                 `bson:"author_id"`
 	Message   string                `bson:"message"`
 	Type      constants.ActionTweet `bson:"type"`
-	CreatedAt time.Time             `bson:"createdAt"`
+	CreatedAt time.Time             `bson:"created_at"`
 }

@@ -25,7 +25,8 @@ func MapRoutes(
 		})
 		v1.Use(middleware.JwtAuthMiddleware(logger.GetDefaultLogger()))
 		{
-			// 	vChat := v1.Group("/notif")
+			vChat := v1.Group("/notif")
+			vChat.GET("", notifHandler.GetNotificationByID)
 
 			vSocket := v1.Group("/ws")
 			vSocket.GET("notification", notifHandler.NotificationWSHandler)
