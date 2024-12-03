@@ -5,6 +5,7 @@ package internal
 
 import (
 	"github.com/google/wire"
+	"github.com/nhutHao02/social-network-common-service/rabbitmq"
 	"github.com/nhutHao02/social-network-notification-service/config"
 	"github.com/nhutHao02/social-network-notification-service/database"
 	"github.com/nhutHao02/social-network-notification-service/internal/api"
@@ -44,6 +45,7 @@ func InitializeServer(
 	rdb *redis.RedisClient,
 	userClient grpcUser.UserServiceClient,
 	ws *ws.Socket,
+	rabbitmq *rabbitmq.RabbitMQ,
 ) *api.Server {
 	wire.Build(serverSet, itemServerSet, httpHandlerSet, serviceSet, repositorySet)
 	return &api.Server{}

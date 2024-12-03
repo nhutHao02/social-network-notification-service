@@ -1,9 +1,14 @@
 package notification
 
+import (
+	"context"
+
+	"github.com/nhutHao02/social-network-notification-service/internal/domain/entity"
+)
+
 type NotificationQueryRepository interface {
-	Query()
 }
 
 type NotificationCommandRepository interface {
-	Command()
+	SaveNotificaion(ctx context.Context, entityModel entity.Notification) (string, error)
 }

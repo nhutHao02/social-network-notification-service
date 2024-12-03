@@ -2,11 +2,10 @@ package model
 
 import "time"
 
-// type MessageReq struct {
-// 	SenderID   int64 `form:"senderID"`
-// 	ReceiverID int64 `form:"receiverID"`
-// 	Token      string
-// }
+type NotifWSReq struct {
+	UserID int64 `form:"userID"`
+	Token  string
+}
 
 type IncomingMessageWSReq struct {
 	Message string `json:"message"`

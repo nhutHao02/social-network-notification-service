@@ -8,6 +8,7 @@ package internal
 
 import (
 	"github.com/google/wire"
+	"github.com/nhutHao02/social-network-common-service/rabbitmq"
 	"github.com/nhutHao02/social-network-notification-service/config"
 	"github.com/nhutHao02/social-network-notification-service/database"
 	"github.com/nhutHao02/social-network-notification-service/internal/api"
@@ -22,10 +23,10 @@ import (
 
 // Injectors from wire.go:
 
-func InitializeServer(cfg *config.Config, db *database.MongoDbClient, rdb *redis.RedisClient, userClient grpc.UserServiceClient, ws *websocket.Socket) *api.Server {
+func InitializeServer(cfg *config.Config, db *database.MongoDbClient, rdb *redis.RedisClient, userClient grpc.UserServiceClient, ws *websocket.Socket, rabbitmq2 *rabbitmq.RabbitMQ) *api.Server {
 	notificationQueryRepository := notification.NewNotificationQueryRepository(db, cfg)
 	notificationCommandRepository := notification.NewNotificationCommandRepository(db, cfg)
-	notificationService := imp.NewNotificationService(notificationQueryRepository, notificationCommandRepository, userClient, ws)
+	notificationService := imp.NewNotificationService(notificationQueryRepository, notificationCommandRepository, userClient, ws, rabbitmq2)
 	notificationHandler := v1.NewNotificationHandler(notificationService)
 	httpServer := http.NewHTTPServer(cfg, notificationHandler)
 	server := api.NewSerVer(httpServer)

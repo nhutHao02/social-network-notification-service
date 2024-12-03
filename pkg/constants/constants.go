@@ -1,7 +1,8 @@
 package constants
 
 var (
-	InvalidUserID = "INVALID ID"
+	InvalidUserID                = "INVALID ID"
+	ConnectNotificationWSFailure = "CONNECT TO NOTIFICATION WEBSOCKET FAILURE"
 )
 
 var (

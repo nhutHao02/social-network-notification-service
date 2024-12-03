@@ -11,11 +11,6 @@ type notificationQueryRepository struct {
 	db  *database.MongoDbClient
 }
 
-// Query implements notification.NotificationQueryRepository.
-func (n *notificationQueryRepository) Query() {
-	panic("unimplemented")
-}
-
 func NewNotificationQueryRepository(db *database.MongoDbClient, cfg *config.Config) notification.NotificationQueryRepository {
 	return &notificationQueryRepository{db: db, cfg: cfg}
 }

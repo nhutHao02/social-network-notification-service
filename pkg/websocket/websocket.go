@@ -45,15 +45,16 @@ func (s *Socket) RemoveConnection(userID string, conn *websocket.Conn) {
 }
 
 // Broadcast message to all connections
-func (s *Socket) Broadcast(userID string, message model.OutgoingMessageWSRes) {
+func (s *Socket) Broadcast(userID string, message model.Notification) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	for uid, conn := range s.connections {
-		if uid != userID {
+		if uid == userID {
 			if err := conn.WriteJSON(message); err != nil {
 				logger.Error("Socket-Broadcast: Error sending message", zap.Error(err))
 				s.RemoveConnection(userID, conn)
 			}
+			break
 		}
 	}
 }

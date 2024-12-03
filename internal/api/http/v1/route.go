@@ -3,6 +3,8 @@ package v1
 import (
 	"net/http"
 
+	"github.com/nhutHao02/social-network-common-service/middleware"
+	"github.com/nhutHao02/social-network-common-service/utils/logger"
 	_ "github.com/nhutHao02/social-network-notification-service/docs"
 
 	"github.com/gin-gonic/gin"
@@ -21,13 +23,13 @@ func MapRoutes(
 				"message": "pong",
 			})
 		})
-		// v1.Use(middleware.JwtAuthMiddleware(logger.GetDefaultLogger()))
-		// {
-		// 	vChat := v1.Group("/notif")
+		v1.Use(middleware.JwtAuthMiddleware(logger.GetDefaultLogger()))
+		{
+			// 	vChat := v1.Group("/notif")
 
-		// 	vSocket := v1.Group("/ws")
-		// 	vSocket.GET("", )
-		// }
+			vSocket := v1.Group("/ws")
+			vSocket.GET("notification", notifHandler.NotificationWSHandler)
+		}
 
 	}
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
