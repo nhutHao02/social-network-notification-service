@@ -3,8 +3,8 @@ package model
 import "time"
 
 type NotifWSReq struct {
-	UserID int64 `form:"userID"`
-	Token  string
+	UserID int64  `form:"userID"`
+	Token  string `form:"token"`
 }
 
 type IncomingMessageWSReq struct {

@@ -123,3 +123,33 @@ func (h *NotificationHandler) GetNotificationByID(c *gin.Context) {
 	c.JSON(http.StatusOK, common.NewPagingSuccessResponse(res, total))
 	return
 }
+
+// NotifiWSHandler godoc
+//
+//	@Summary		NotifiWSHandler
+//	@Description	NotifiWSHandler send messages to user.
+//	@Tags			Notification
+//	@Accept			json
+//	@Produce		json
+//	@Param			Authorization	header		string						true	"Bearer <your_token>"
+//	@Param			userID			query		int							true	"User ID"
+//	@Success		101				{string}	string						"WebSocket connection established"
+//	@Failure		default			{object}	common.Response{data=nil}	"failure"
+//	@Router			/ws/notification [get]
+func (h *NotificationHandler) NotifiWSHandler(c *gin.Context) {
+	var req model.NotifWSReq
+
+	if err := request.GetQueryParamsFromUrl(c, &req); err != nil {
+		return
+	}
+
+	// Upgrade HTTP connection to WebSocket
+	conn, err := websocket.Upgrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		logger.Error("Error when upgrade HTTP connection to WebSocket", zap.Error(err))
+		c.JSON(http.StatusInternalServerError, common.NewErrorResponse(err.Error(), constants.ConnectNotificationWSFailure))
+		return
+	}
+
+	h.notifService.NotificationWS(c.Request.Context(), conn, req)
+}

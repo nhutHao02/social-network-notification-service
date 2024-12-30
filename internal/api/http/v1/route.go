@@ -30,13 +30,15 @@ func MapRoutes(
 				"message": "pong",
 			})
 		})
+		v1.GET("/ws/notifi", notifHandler.NotifiWSHandler)
 		v1.Use(middleware.JwtAuthMiddleware(logger.GetDefaultLogger()))
 		{
 			vChat := v1.Group("/notif")
 			vChat.GET("", notifHandler.GetNotificationByID)
 
 			vSocket := v1.Group("/ws")
-			vSocket.GET("notification", notifHandler.NotificationWSHandler)
+			vSocket.GET("/notification", notifHandler.NotificationWSHandler)
+
 		}
 
 	}
