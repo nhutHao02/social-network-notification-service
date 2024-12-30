@@ -120,6 +120,6 @@ func (h *NotificationHandler) GetNotificationByID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusBadRequest, common.NewPagingSuccessResponse(res, total))
+	c.JSON(http.StatusOK, common.NewPagingSuccessResponse(res, total))
 	return
 }
